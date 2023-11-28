@@ -1,7 +1,41 @@
+#include <iostream>
+
 template <typename Key, typename Info>
 class Ring // doubly-linked ring
 {
+
+private:
+    struct Node
+    {
+        Key key;
+        Info info;
+        Node *next;
+        Node *previous;
+    };
+    Node *start;
+
 public:
+    Ring() : start(nullptr) {}
+
+    void insert(const Key &key, const Info &info)
+    {
+        Node *newNode = new Node{key, info, nullptr, nullptr};
+
+        if (start == nullptr)
+        {
+            start = newNode;
+            start->next = start;
+            start->previous = start;
+        }
+        else
+        {
+            newNode->previous = start->previous;
+            newNode->next = start;
+            start->previous->next = newNode;
+            start->previous = newNode;
+        }
+    }
+
     bool removeAllByKey(const Key &key)
     {
         if (start == nullptr)
@@ -22,7 +56,6 @@ public:
             }
             else
                 nodePtr = nodePtr->next;
-
         }
 
         // now nodePtr must be = start
@@ -38,13 +71,65 @@ public:
         return true;
     }
 
-private:
-    struct Node
+    void printRing() const
     {
-        Key key;
-        Info info;
-        Node *next;
-        Node *previous;
-    };
-    Node *start;
+        if (start == nullptr)
+        {
+            std::cout << "Ring is empty." << std::endl;
+            return;
+        }
+
+        Node *current = start;
+        do
+        {
+            std::cout << "Key: " << current->key << ", Info: " << current->info << std::endl;
+            current = current->next;
+        } while (current != start);
+    }
 };
+int main()
+{
+    Ring<int, std::string> myRing;
+
+    // Insert some elements into the ring
+    myRing.insert(2, "Two");
+    myRing.insert(1, "One");
+    myRing.insert(4, "Four");
+    myRing.insert(4, "Four");
+    myRing.insert(3, "Three");
+    myRing.insert(2, "Two");
+    myRing.insert(4, "Four");
+    myRing.insert(4, "Four");
+    myRing.insert(2, "Two");
+    myRing.insert(2, "Another Two"); // Adding a duplicate key
+
+    std::cout << "Initial Ring:" << std::endl;
+    myRing.printRing(); // Print the initial ring
+
+    // Remove elements by key
+    bool removed = myRing.removeAllByKey(2);
+
+    if (removed)
+    {
+        std::cout << "\nAfter removing elements with key 2:" << std::endl;
+        myRing.printRing(); // Print the ring after removal
+    }
+    else
+    {
+        std::cout << "\nNo elements found with key 2 to remove." << std::endl;
+    }
+
+    removed = myRing.removeAllByKey(4);
+
+    if (removed)
+    {
+        std::cout << "\nAfter removing elements with key 2:" << std::endl;
+        myRing.printRing(); // Print the ring after removal
+    }
+    else
+    {
+        std::cout << "\nNo elements found with key 2 to remove." << std::endl;
+    }
+
+    return 0;
+}
