@@ -258,17 +258,41 @@ private:
     {
         if (node == nullptr)
             return 0;
-
-        int left, right;
-        left = height(node->left) + 1;
-        right = height(node->right) + 1;
-        if (left > right)
-            return left;
-        if (left <= right)
-            return right;
         else
-            std::cerr << "Error occured while finding height";
+        {
+            int left = height(node->left);
+            int right = height(node->right);
+            return (left > right) ? left + 1 : right + 1;
+        }
+
+        // int left, right;
+        // left = height(node->left) + 1;
+        // right = height(node->right) + 1;
+        // if (left > right)
+        //     return left;
+        // if (left <= right)
+        //     return right;
+        // else
+        //     std::cerr << "Error occured while finding height";
+        // return 0;
+    }
+
+    int getLeavesNr(Node *node) const
+    {
+        if (node == nullptr)
             return 0;
+        if (node->left == nullptr && node->right == nullptr)
+            return 1;
+        else
+            return getLeavesNr(node->left) + getLeavesNr(node->right);
+    }
+
+    int getNrNodesSubTrees(Node *node) const
+    {
+        if (node == nullptr)
+            return 0;
+        else
+            return 1 + getNrNodesSubTrees(node->left) + getNrNodesSubTrees(node->right);
     }
 
 public:
@@ -298,6 +322,16 @@ public:
     {
         return height(root);
     }
+
+    int getLeavesNr() const
+    {
+        return getLeavesNr(root);
+    }
+
+    int getNrNodesLeftSubTree() const
+    {
+        return getNrNodesSubTrees(root->left);
+    }
 };
 
 int main()
@@ -312,7 +346,7 @@ int main()
     avl.insert(7, "Value 7");
     avl.insert(99, "Value 99");
     avl.insert(9, "Value 9");
-    avl.insert(8, "Value 8");
+    // avl.insert(8, "Value 8");
     avl.insert(13, "Value 13");
 
     std::cout << "Inserted elements into AVL Tree." << std::endl;
@@ -321,7 +355,9 @@ int main()
 
     std::cout << std::endl
               << std::endl
-              << "Height: " << avl.getHeight();
+              << "Height: " << avl.getHeight() << std::endl;
+    std::cout << "Number of leaves: " << avl.getLeavesNr() << std::endl;
+    std::cout << "Number of nodes in the left subtree of the root: " << avl.getNrNodesLeftSubTree() << std::endl;
 
     return 0;
 }
