@@ -1,4 +1,4 @@
-// #include <iostream>
+#include <iostream>
 
 // template <typename Key, typename Info>
 // class Ring // doubly-linked ring
@@ -196,3 +196,132 @@
 
 // 3  ====================================================================================================================
 
+template <typename Key, typename Info>
+class AVLTree
+{
+private:
+    struct Node
+    {
+        Key key;
+        Info info;
+        Node *left;
+        Node *right;
+    };
+    Node *root;
+
+    bool insert(const Key &key, const Info &info, Node *&parent)
+    {
+        if (parent == nullptr)
+        {
+            parent = new Node;
+            parent->key = key;
+            parent->info = info;
+            parent->left = nullptr;
+            parent->right = nullptr;
+
+            return true;
+        }
+        if (key < parent->key)
+            return insert(key, info, parent->left);
+        if (key == parent->key)
+            return false;
+        if (key > parent->key)
+            return insert(key, info, parent->right);
+        return false;
+    }
+
+    void inOrderTraversal(Node *node) const
+    {
+        if (node != nullptr)
+        {
+            inOrderTraversal(node->left);
+            std::cout << "Key: " << node->key << ", Info: " << node->info << std::endl;
+            inOrderTraversal(node->right);
+        }
+    }
+
+    void printIndented(Node *node, int level) const
+    {
+        if (node != nullptr)
+        {
+            printIndented(node->right, level + 1);
+            for (int i = 0; i < level; ++i)
+            {
+                std::cout << "   "; // Adjust spaces for indentation
+            }
+            std::cout << node->key << std::endl;
+            printIndented(node->left, level + 1);
+        }
+    }
+
+    int height(const Node *node) const
+    {
+        if (node == nullptr)
+            return 0;
+
+        int left, right;
+        left = height(node->left) + 1;
+        right = height(node->right) + 1;
+        if (left > right)
+            return left;
+        if (left <= right)
+            return right;
+        else
+            std::cerr << "Error occured while finding height";
+            return 0;
+    }
+
+public:
+    AVLTree()
+    {
+        root = nullptr;
+    }
+
+    bool insert(const Key &key, const Info &info)
+    {
+        return insert(key, info, root);
+    }
+
+    void print() const
+    {
+        std::cout << "AVL Tree Contents:" << std::endl;
+        inOrderTraversal(root);
+    }
+
+    void printGraphical() const
+    {
+        std::cout << "Graphical Representation of AVL Tree:" << std::endl;
+        printIndented(root, 0);
+    }
+
+    int getHeight() const
+    {
+        return height(root);
+    }
+};
+
+int main()
+{
+    AVLTree<int, std::string> avl;
+
+    avl.insert(10, "Value 10");
+    avl.insert(5, "Value 5");
+    avl.insert(15, "Value 15");
+    avl.insert(3, "Value 3");
+    avl.insert(6, "Value 6");
+    avl.insert(7, "Value 7");
+    avl.insert(99, "Value 99");
+    avl.insert(9, "Value 9");
+    avl.insert(8, "Value 8");
+    avl.insert(13, "Value 13");
+
+    std::cout << "Inserted elements into AVL Tree." << std::endl;
+
+    avl.printGraphical();
+
+    std::cout << std::endl
+              << std::endl
+              << "Height: " << avl.getHeight();
+
+    return 0;
+}
